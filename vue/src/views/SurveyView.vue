@@ -16,8 +16,8 @@
                         </label>
                         <div class="mt-1 flex items-center">
                             <img
-                                v-if="model.image"
-                                :src="model.image"
+                                v-if="model.image_url"
+                                :src="model.image_url"
                                 :alt="model.title"
                                 class="w-64 h-48 object-cover" />
                                 <span
@@ -61,6 +61,7 @@
                                 >
                                     <input
                                       type="file"
+                                      @change="onImageChoose"
                                       class="absolute
                                       left-0
                                       top-0
@@ -224,11 +225,13 @@
 <script setup>
 import store from "../store"
 import { ref } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 import PageComponent from "../components/PageComponent.vue"
 import QuestionEditor from "../editor/QuestionEditor.vue"
 
 const route = useRoute()
+
+const router =useRouter()
 
 let model = ref({
     title:"",
@@ -263,11 +266,32 @@ let model = ref({
     }
 
     function questionChange(question) {
-        model.value.questions = model.value.questions.mapp((q) => {
+        model.value.questions = model.value.questions.map((q) => {
             if (q.id === question.id) {
                 return JSON.parse(JSON.stringify(question))
             }
         })
+    }
+
+    function saveSurvey() {
+        store.dispatch("saveSurvey", model.value).then(({ data }) => {
+            router.push({
+                name:"SurveyView",
+                params: {id: data.data.id}
+            })
+        })
+    }
+
+    function onImageChoose (ev) {
+        const file = ev.target.files[0]
+
+        const reader = new FileReader()
+
+        reader.onload = () => {
+            model.value.image = reader.result
+            model.value.image_url = reader.result
+        }
+        reader.readAsDataURL(file)
     }
 
 
