@@ -39,7 +39,7 @@
           <button
               v-if="survey.id"
               type="button"
-              @click="deleteSurvey(survey)"
+              @click="emit('delete', survey)"
               class="h-8 w-8 flex items-center justify-center rounded-full border border-transparent text-sm text-red-500 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
               >
               <svg
@@ -60,10 +60,14 @@
     </div>
 </template>
 
-<script>
-export default {
+<script setup>
 
-}
+    const {survey} = defineProps({
+        survey: Object
+    })
+
+    const emit = defineEmits(['delete'])
+
 </script>
 
 <style>

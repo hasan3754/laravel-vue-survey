@@ -33,7 +33,7 @@
     </template>
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3">
         <SurveyListItem v-for="survey in surveys"
-        :key="survey.id" :survey="survey" />
+        :key="survey.id" :survey="survey" @delete="deleteSurvey(survey)" />
     </div>
   </PageComponent>
 </template>
@@ -48,7 +48,10 @@ import SurveyListItem from "../components/SurveyListItem.vue"
 
 function deleteSurvey(survey) {
     if(confirm('Are you sure you want to delete this survey? Operation cant be undone!!')) {
-      
+      store.dispatch('deleteSurvey', survey.id).then(() => {
+             store.dispatch('getSurveys')     
+        }) 
+
     }
 }
 
