@@ -3,11 +3,30 @@
     <template v-slot:header>
         <div class="flex items-center justify-between">
             <h1 class="text-3xl font-bold text-gray-900">
-                {{ model.id === true ? model.title : 'Create a Survey' }}
+                {{ route.params.id === true ? model.title : 'Create a Survey' }}
             </h1>
+            <button
+                v-if="route.params.id"
+                type="button"
+                @click="dleleteSurvey()"
+                class="py-2 px-3 text-white bg-red-500 rounded-md hover:bg-red"
+            >
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 -mt-1 inline-block"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                >
+                <path
+                    fill-rule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002"
+                    clip-rule="evenodd"
+                />
+            </svg> Delete Survey </button>
         </div>
     </template>
-    <form @submit.prevent="saveSurvey">
+    <div v-if="surveyLoading" class="flex justify-center">Loading...</div>
+    <form v-else @submit.prevent="saveSurvey">
             <div class="shadow sm:rounded-md sm:overflow-hidden">
                 <div class="px-4 py-5 bg-white space-y-6 sm:p-6">
                     <div>
@@ -224,7 +243,7 @@
 
 <script setup>
 import store from "../store"
-import { ref } from "vue"
+import { ref, watch, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import PageComponent from "../components/PageComponent.vue"
 import QuestionEditor from "../editor/QuestionEditor.vue"
@@ -233,18 +252,29 @@ const route = useRoute()
 
 const router =useRouter()
 
+const surveyLoading = computed(() => store.state.currentSurvey.loading)
+
 let model = ref({
     title:"",
     status: false,
     description: null,
-    image: null,
+    image_url: null,
     expire_date: null,
     questions: []
 })
+
+    watch(
+        () => store.state.currentSurvey.data,
+        (newVal, oldVal) => {
+            model.value = {
+                ...JSON.parse(JSON.stringify(newVal)),
+                status: newVal.status !== "draft"
+            }
+        }
+    )
+
     if (route.params.id) {
-        model.value = store.state.surveys.find(
-            (s) => s.id === parseInt(route.params.id)
-        )
+      store.dispatch('getSurvey', route.params.id)
     }
 
     function addQuestion(index) {
@@ -292,6 +322,16 @@ let model = ref({
             model.value.image_url = reader.result
         }
         reader.readAsDataURL(file)
+    }
+
+    function deleteSurvey() {
+        if (confirm('Do you want to delete this survey?')) {
+            store.dispatch('deleteSurvey', model.value.id).then(() => {
+                router.push({
+                    name: 'Surveys'
+                })
+            })
+        }
     }
 
 
