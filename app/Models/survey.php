@@ -9,6 +9,12 @@ use Spatie\Sluggable\SlugOptions;
 
 class survey extends Model
 {
+    CONST TYPE_TEXT = 'text';
+    CONST TYPE_TEXTAREA = 'textarea';
+    CONST TYPE_SELECT = 'select';
+    CONST TYPE_RADIO = 'radio';
+    CONST TYPE_CHECKBOX = 'checkbox';
+
     use HasFactory, HasSlug;
 
     protected $fillable = ['user_id', 'image', 'title', 'slug', 'status', 'description', 'expire_date'];
@@ -18,6 +24,10 @@ class survey extends Model
         return SlugOptions::create()
             ->generateSlugsFrom('title')
             ->saveSlugsTo('slug');
+    }
+
+    public function questions() {
+        return $this->hasMany(SurveyQuestion::class);
     }
 
 }
