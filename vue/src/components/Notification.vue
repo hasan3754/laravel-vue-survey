@@ -11,7 +11,7 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 
-const store = useState()
+const store = useStore()
 
 const notification = computed(() => store.state.notification)
 

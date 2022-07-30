@@ -265,7 +265,7 @@ const questionTypes = computed(() => store.state.questionTypes)
 
     function dataChange() {
         const data = JSON.parse(JSON.stringify(model.value))
-        if(!shouldHaveoptions()) {
+        if(!shouldHaveOptions()) {
             delete data.data.options
         }
         emit("change", data)

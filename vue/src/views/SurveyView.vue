@@ -242,6 +242,7 @@
 </template>
 
 <script setup>
+import { v4 as uuidv4 } from "uuid";
 import store from "../store"
 import { ref, watch, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
@@ -296,11 +297,13 @@ let model = ref({
     }
 
     function questionChange(question) {
+        console.log(model.value.questions)
         model.value.questions = model.value.questions.map((q) => {
             if (q.id === question.id) {
                 return JSON.parse(JSON.stringify(question))
             }
         })
+        console.log(model.value.questions)
     }
 
     function saveSurvey() {
